@@ -39,12 +39,12 @@ jobs:
           name: ${{ matrix.config['archiveName'] }}
           path: ./dist/oibus.zip
 
-  release-master:
-    name: 'Release master'
+  release:
+    name: 'Release'
     needs: build-all
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout current branch
+      - name: Checkout
         uses: actions/checkout@v2
 
       - name: Setup Node.js
@@ -61,8 +61,11 @@ jobs:
         run: |
           git config --global user.name 'optimistik-actions'
           git config --global user.email 'optimistiksas@users.noreply.github.com'
-          npm ci
-          npm run release
+          VERSION_ARGS=""
+          if [ "$BRANCH" != master ]; then
+            VERSION_ARGS="--prerelease $(echo ${BRANCH} | tr '\\/' - | tr -dc '[:alnum:]-+.\n\r' )" # first tr replace / and \ to -, second tr removes all non alphanums except .+-\n\r
+          fi
+          npm run bump -- $VERSION_ARGS
           echo ::set-output name=version-tag::$(git describe --tags $(git rev-list --tags --max-count=1))
 
       - name: Download all builds
@@ -75,7 +78,7 @@ jobs:
           tag_name: ${{ steps.standard-version.outputs.version-tag }}
           name: ${{ steps.standard-version.outputs.version-tag }}
           body_path: CHANGELOG.md
-          pre_release: false
+          prerelease: false
           files: |
             ${{steps.download.outputs.download-path}}/OIBus-macos.zip/OIBus-macos.zip
             ${{steps.download.outputs.download-path}}/OIBus-win32x64.zip/OIBus-win32x64.zip
