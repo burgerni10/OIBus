@@ -66,6 +66,7 @@ jobs:
           if [ "$BRANCH" != master ]; then
             VERSION_ARGS="--prerelease ${BRANCH}"
           fi
+          npm ci
           npm run bump -- $VERSION_ARGS
           echo ::set-output name=version-tag::$(git describe --tags $(git rev-list --tags --max-count=1))
 
