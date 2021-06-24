@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.2.2-fix-check-before-release.3 (2021-06-24)
+
+
+### Bug Fixes
+
+* find artifacts ([aa3f25c](https://github.com/OptimistikSAS/OIBus/commit/aa3f25c173d34b03c5e94d97781e7a9240970897))
+
 ### 1.2.2-fix-check-before-release.2 (2021-06-24)
 
 ### 1.2.2-fix-check-before-release.1 (2021-06-24)
