@@ -87,9 +87,9 @@ jobs:
           body_path: CHANGELOG.md
           prerelease: false
           files: |
-            ${{steps.download.outputs.download-path}}/OIBus-macos.zip
-            ${{steps.download.outputs.download-path}}/OIBus-win32x64.zip
-            ${{steps.download.outputs.download-path}}/OIBus-linux.zip
+            ${{steps.download.outputs.download-path}}/OIBus-macos.zip/OIBus-macos.zip
+            ${{steps.download.outputs.download-path}}/OIBus-win32x64.zip/OIBus-win32x64.zip
+            ${{steps.download.outputs.download-path}}/OIBus-linux.zip/OIBus-linux.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
