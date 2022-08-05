@@ -1,16 +1,17 @@
-name: release
+name: Release next OIBus version
+
 on:
   workflow_dispatch:
 jobs:
-  build-all:
-    name: 'Build'
+  tests:
+    name: Test on ${{ matrix.config['os'] }}
     runs-on: ${{ matrix.config['os'] }}
     strategy:
       matrix:
         config:
-          - { os: 'macos-latest',   platform: 'macos', archiveName: 'OIBus-macos.zip',    zip: 'zip -r'     }
-          - { os: 'ubuntu-latest',  platform: 'linux', archiveName: 'OIBus-linux.zip',    zip: 'zip -r'     }
-          - { os: 'windows-latest', platform: 'win',   archiveName: 'OIBus-win32x64.zip', zip: '7z a -tzip' }
+          - { os: 'macos-latest' }
+          - { os: 'windows-latest' }
+          - { os: 'ubuntu-latest' }
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -19,33 +20,39 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.15
+          node-version: 16
 
-      - name: Use npm
-        run: |
-          npm install -g npm@8.5.5
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Package OIBus for ${{ matrix.config['platform'] }}
-        id: pkg
-        shell: pwsh
-        run: |
-          npm ci
-          npm run build-${{ matrix.config['platform'] }}
-          cd dist/${{ matrix.config['platform'] }}
-          dir
-          ./oibus --config ../../tests/oibus.json --check true
-          ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
+      - name: Run lint
+        run: npm run lint
 
-      - name: Upload ${{ matrix.config['archiveName'] }}
-        uses: actions/upload-artifact@v3
+      - name: Run unit tests
+        run: npm test
+
+      - name: Install Docker on MacOS
+        if: ${{ matrix.config['os'] == 'macos-latest' }}
+        run: brew install docker docker-machine docker-compose
+
+      - name: Prepare integration test
+        run: npm run setup-dev-env
+
+      - name: Wait for docker containers
+        uses: jakejarvis/wait-action@master
         with:
-          name: ${{ matrix.config['archiveName'] }}
-          path: ./dist/${{ matrix.config['archiveName'] }}
+          time: '15s'
+
+      - name: Integration test
+        run: npm run int-test
 
   release:
-    name: 'Release'
-    needs: build-all
+    name: 'Create new version'
+    needs: tests
     runs-on: ubuntu-latest
+    outputs:
+      version-tag: ${{ steps.standard-version.outputs.version-tag }}
+      prerelease: ${{ steps.standard-version.outputs.prerelease }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -55,11 +62,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.15
-
-      - name: Use npm
-        run: |
-          npm install -g npm@8.5.5
+          node-version: 16
 
       - name: Bump version
         id: standard-version
@@ -69,22 +72,97 @@ jobs:
           VERSION_ARGS=""
           PRERELEASE=false
           BRANCH=$(git branch --show-current| tr '\\/' - | tr -dc '[:alnum:]-+.\n\r' ) # first tr replace / and \ to -, second tr removes all non alphanums except .+-\n\r)
-          if [ "$BRANCH" != master ]; then
+          if [ "$BRANCH" == main ]; then
+            VERSION_ARGS="--prerelease beta"
+            PRERELEASE=true
+          elif [ "$BRANCH" != release ]; then
             VERSION_ARGS="--prerelease ${BRANCH}"
             PRERELEASE=true
           fi
           npm ci
           npm run bump -- $VERSION_ARGS
-          echo ::set-output name=version-tag::$(git describe --tags $(git rev-list --tags --max-count=1)) 
-          echo ::set-output name=prerelease::$PRERELEASE 
+          echo ::set-output name=version-tag::$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo ::set-output name=prerelease::$PRERELEASE
+
+      - name: Upload artifact CHANGELOG.md
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./CHANGELOG.md
+
+  builds:
+    name: Build on ${{ matrix.config['os'] }}
+    needs: release
+    runs-on: ${{ matrix.config['os'] }}
+    strategy:
+      matrix:
+        config:
+          - { os: 'macos-latest',   platform: 'macos', archiveName: 'OIBus-macos.zip', zip: 'zip -r' }
+          - { os: 'windows-latest', platform: 'win',   archiveName: 'OIBus-win32x64.zip', zip: '7z a -tzip' }
+          - { os: 'ubuntu-latest',  platform: 'linux', archiveName: 'OIBus-linux.zip', zip: 'zip -r' }
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Package OIBus for ${{ matrix.config['platform'] }}
+        run: |
+          npm run build-${{ matrix.config['platform'] }}
+          cd dist/${{ matrix.config['platform'] }}
+          ./oibus --config ../../tests/oibus.json --check true
+          ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
+
+      - name: Upload artifact ${{ matrix.config['archiveName'] }}
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/${{ matrix.config['archiveName'] }}
+
+      - name: Package Windows installer
+        if: ${{ matrix.config['platform'] == 'win' }}
+        run: npm run build-win-setup
+        working-directory: ./dist/win
+        shell: cmd
+
+      - name: Rename windows installer
+        if: ${{ matrix.config['platform'] == 'win' }}
+        run: mv ./dist/win-setup-release/oibus_setup.exe ./dist/win-setup-release/OIBus-setup-win32x64.exe
+
+      - name: Upload Windows installer
+        if: ${{ matrix.config['platform'] == 'win' }}
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/win-setup-release/OIBus-setup-win32x64.exe
+
+  publish:
+    name: 'Publish binaries'
+    needs: [builds, release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download OIBus artifacts
+        id: download
+        uses: actions/download-artifact@v3
+
+      - name: Display structure of downloaded files
+        run: ls -R
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.standard-version.outputs.version-tag }}
-          name: ${{ steps.standard-version.outputs.version-tag }}
-          body_path: CHANGELOG.md
-          prerelease: ${{ steps.standard-version.outputs.prerelease }}
+          tag_name: ${{ needs.release.outputs.version-tag }}
+          name: ${{ needs.release.outputs.version-tag }}
+          body_path: ./artifact/CHANGELOG.md
+          prerelease: ${{ needs.release.outputs.prerelease }}
+          files: |
+            ./artifact/OIBus-setup-win32x64.exe
+            ./artifact/OIBus-linux.zip
+            ./artifact/OIBus-macos.zip
+            ./artifact/OIBus-win32x64.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN}} # Need REPO_ACCESS_TOKEN to propagate 'release published' event
-
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }} # Need REPO_ACCESS_TOKEN to propagate 'release published' event
