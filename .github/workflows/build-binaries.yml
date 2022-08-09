@@ -8,6 +8,11 @@ on:
         required: true
         type: string
 
+env:
+  PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+  PFX_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
+  PFX_PATH: C://oibus.pfx
+
 jobs:
   build-binaries:
     name: Build on ${{ matrix.config['os'] }}
@@ -15,10 +20,11 @@ jobs:
     strategy:
       matrix:
         config:
-          - { os: 'macos-latest',   platform: 'macos', archiveName: 'OIBus-macos.zip', zip: 'zip -r' }
+#          - { os: 'macos-latest',   platform: 'macos', archiveName: 'OIBus-macos.zip', zip: 'zip -r' }
           - { os: 'windows-latest', platform: 'win',   archiveName: 'OIBus-win32x64.zip', zip: '7z a -tzip' }
-          - { os: 'ubuntu-latest',  platform: 'linux', archiveName: 'OIBus-linux.zip', zip: 'zip -r' }
+#          - { os: 'ubuntu-latest',  platform: 'linux', archiveName: 'OIBus-linux.zip', zip: 'zip -r' }
     timeout-minutes: 20
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,23 +36,29 @@ jobs:
         with:
           cache_version: ${{ secrets.GH_ACTIONS_CACHE_KEY }}
 
-      - name: Package OIBus for ${{ matrix.config['platform'] }}
-        run: |
-          npm run build:${{ matrix.config['platform'] }}
-          cd dist/${{ matrix.config['platform'] }}
-          ./oibus --config ../../tests/oibus.json --check true
-          ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
+#      - name: Package OIBus for ${{ matrix.config['platform'] }}
+#        run: |
+#          npm run build:${{ matrix.config['platform'] }}
+#          cd dist/${{ matrix.config['platform'] }}
+#          ./oibus --config ../../tests/oibus.json --check true
+#          ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
+#
+#      - name: Upload artifact ${{ matrix.config['archiveName'] }}
+#        uses: actions/upload-artifact@v3
+#        with:
+#          path: ./dist/${{ matrix.config['archiveName'] }}
 
-      - name: Upload artifact ${{ matrix.config['archiveName'] }}
-        uses: actions/upload-artifact@v3
-        with:
-          path: ./dist/${{ matrix.config['archiveName'] }}
 
       - name: Package Windows installer
-        if: ${{ matrix.config['platform'] == 'win' }}
-        run: npm run build:win-setup
-        working-directory: ./dist/win
-        shell: cmd
+#        if: ${{ matrix.config['platform'] == 'win' }}
+        shell: pwsh
+#        working-directory: ./dist/win
+        run: |
+          $encodedBytes = [System.Convert]::FromBase64String(${{ env.PFX_CONTENT }})
+          Set-Content -Path ${{ env.PFX_PATH }} -AsByteStream -Value $encodedBytes
+          Import-PfxCertificate -FilePath ${{ env.PFX_PATH }} -CertStoreLocation Cert:\CurrentUser\oibus -Password (ConvertTo-SecureString -String ${{ env.PFX_PASSWORD }} -Force -AsPlainText)
+          npm run build:win-setup
+          Remove-Item -Path ${{ env.PFX_PATH }};
 
       - name: Rename windows installer
         if: ${{ matrix.config['platform'] == 'win' }}
