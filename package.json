@@ -81,7 +81,7 @@
     "pino-abstract-transport": "1.0.0",
     "pino-pretty": "8.1.0",
     "proxy-agent": "5.0.0",
-    "selfsigned": "2.0.1",
+    "selfsigned": "2.1.1",
     "sprintf-js": "1.1.2",
     "sqlite": "4.1.2",
     "sqlite3": "5.0.11",
