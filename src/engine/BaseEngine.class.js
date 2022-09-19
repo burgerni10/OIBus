@@ -3,6 +3,7 @@ const VERSION = require('../../package.json').version
 const apiList = {}
 apiList.OIAnalytics = require('../north/OIAnalytics/OIAnalytics.class')
 apiList.OIConnect = require('../north/OIConnect/OIConnect.class')
+apiList.A3ITAHO = require('../north/A3ITAHO/A3ITAHO.class')
 apiList.FileWriter = require('../north/FileWriter/FileWriter.class')
 apiList.AmazonS3 = require('../north/AmazonS3/AmazonS3.class')
 apiList.InfluxDB = require('../north/InfluxDB/InfluxDB.class')
