@@ -1,12 +1,12 @@
-const fs = require('fs/promises')
-
+const net = require('net')
+const { CallRequest } = require('node-opcua-client')
 const ApiHandler = require('../ApiHandler.class')
 
 class A3ITAHO extends ApiHandler {
   static category = 'IoT'
 
   /**
-   * Constructor for OIConnect
+   * Constructor for A3ITAHO
    * @constructor
    * @param {Object} applicationParameters - The application parameters
    * @param {BaseEngine} engine - The Engine
@@ -14,15 +14,12 @@ class A3ITAHO extends ApiHandler {
    */
   constructor(applicationParameters, engine) {
     super(applicationParameters, engine)
-    const { host, valuesEndpoint, fileEndpoint, authentication, proxy } = applicationParameters.OIConnect
-    const name = `${this.engineConfig.engineName}:${this.application.name}`
-    this.valuesUrl = `${host}${valuesEndpoint}?name=${name}`
-    this.fileUrl = `${host}${fileEndpoint}?name=${name}`
-    this.authentication = authentication
-    this.proxy = this.getProxy(proxy)
-
+    const { host, port } = applicationParameters.A3ITAHO
+    this.host = host
+    this.port = port
+    this.sentValues = {}
     this.canHandleValues = true
-    this.canHandleFiles = true
+    this.canHandleFiles = false
   }
 
   /**
@@ -31,31 +28,59 @@ class A3ITAHO extends ApiHandler {
    * @return {Promise} - The handle status
    */
   async handleValues(values) {
-    this.updateStatusDataStream({
-      'Last handled values at': new Date().toISOString(),
-      'Number of values sent since OIBus has started': this.statusData['Number of values sent since OIBus has started'] + values.length,
-      'Last added point id (value)': `${values[values.length - 1].pointId} (${JSON.stringify(values[values.length - 1].data)})`,
+    let payload = ''
+    values.forEach((value) => {
+      if (this.sentValues[value.pointId] !== value.data.value) {
+        this.sentValues[value.pointId] = value.data.value
+        payload += String.fromCharCode(parseInt(value.data.value, 10))
+      }
     })
-    await this.postJson(values)
-    this.logger.debug(`OIConnect ${this.application.name} has posted ${values.length} values`)
+    if(payload.length > 0){
+      this.socket.write(payload)
+    }
     return values.length
   }
 
   /**
-   * Handle the file.
-   * @param {String} filePath - The path of the file
-   * @return {Promise} - The resulting HTTP status
+   * Initiates a connection for every data source to the right host and port.
+   * @return {void}
    */
-  async handleFile(filePath) {
-    const stats = await fs.stat(filePath)
-    this.logger.debug(`OIConnect ${this.application.name} handleFile(${filePath}) (${stats.size} bytes)`)
-    this.updateStatusDataStream({
-      'Last uploaded file': filePath,
-      'Number of files sent since OIBus has started': this.statusData['Number of files sent since OIBus has started'] + 1,
-      'Last upload at': new Date().toISOString(),
-    })
-    return this.postFile(filePath)
+   async connect() {
+    this.connectToTCPServer()
   }
+
+    /**
+   * Close the connection
+   *
+   * @return {void}
+   */
+     async disconnect() {
+      if (this.reconnectTimeout) {
+        clearTimeout(this.reconnectTimeout)
+      }
+      if (this.connected) {
+        this.socket.end()
+        this.connected = false
+      }
+      await super.disconnect()
+    }
+
+    connectToTCPServer() {
+      this.reconnectTimeout = null
+      this.socket = new net.Socket()
+      this.socket.connect(
+        { host: this.host, port: this.port },
+        () => {
+          super.connect()
+          this.updateStatusDataStream({ 'Connected at': new Date().toISOString() })
+        },
+      )
+      this.socket.on('error', (error) => {
+        this.logger.error(`A3ITAHO connect error: ${JSON.stringify(error)}`)
+        this.disconnect()
+        this.reconnectTimeout = setTimeout(this.connectToTCPServer.bind(this), this.retryInterval)
+      })
+    }
 }
 
 module.exports = A3ITAHO

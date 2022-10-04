@@ -8,11 +8,9 @@ schema.form = {
     label: 'A3ITAHO settings',
     md: 12,
     children: (
-      <>
         <p>
           A3ITAHO TODO.
         </p>
-      </>
     ),
   },
   host: {
