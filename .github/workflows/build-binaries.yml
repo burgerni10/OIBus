@@ -8,11 +8,6 @@ on:
         required: true
         type: string
 
-env:
-  PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
-  PFX_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
-  PFX_PATH: C://oibus.pfx
-
 jobs:
   build-binaries:
     name: Build on ${{ matrix.config['os'] }}
@@ -49,7 +44,12 @@ jobs:
 #          path: ./dist/${{ matrix.config['archiveName'] }}
 
 
+      - run: echo ${{ env.PFX_CONTENT }}
       - name: Package Windows installer
+        env:
+          PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+          PFX_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
+          PFX_PATH: C://oibus.pfx
 #        if: ${{ matrix.config['platform'] == 'win' }}
         shell: pwsh
 #        working-directory: ./dist/win
