@@ -43,8 +43,6 @@ jobs:
 #        with:
 #          path: ./dist/${{ matrix.config['archiveName'] }}
 
-
-      - run: echo ${{ env.PFX_CONTENT }}
       - name: Package Windows installer
         env:
           PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
@@ -52,6 +50,7 @@ jobs:
           PFX_PATH: C://oibus.pfx
 #        if: ${{ matrix.config['platform'] == 'win' }}
         shell: pwsh
+
 #        working-directory: ./dist/win
         run: |
           $encodedBytes = [System.Convert]::FromBase64String(${{ env.PFX_CONTENT }})
