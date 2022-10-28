@@ -19,12 +19,19 @@ schema.form = {
     valid: isHost(),
     help: <div>IP address of the TAHO source</div>,
   },
+  /** 
+  ModuleADAM: {
+    type: 'OIbText',
+    defaultValue: 'ADAM00',
+    valid: isModuleADAM(),
+    help: <div>Module ADAM lié au TAHO</div>,
+  },*/
   port: {
     type: 'OIbInteger',
     newRow: false,
     valid: inRange(1, 65535),
     defaultValue: 9999,
-    help: <div>Port number of the TAHO</div>,
+    help: <div>LE Port number of the TAHO</div>,
   },
 }
 schema.category = 'IoT'
