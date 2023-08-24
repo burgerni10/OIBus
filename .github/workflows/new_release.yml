@@ -29,8 +29,8 @@ jobs:
           command: manifest
           signoff: "Optimistik SAS <optimistiksas@users.noreply.github.com>"
           default-branch: main
-          config-file: ./.github/release-please-config.json
-          manifest-file: ./.github/release-please-manifest.json
+          config-file: .github/release-please-config.json
+          manifest-file: .github/release-please-manifest.json
 
       - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.release_created }}
