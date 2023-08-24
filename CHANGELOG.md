@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.2](https://github.com/burgerni10/OIBus/compare/v2.9.1...v2.9.2) (2023-08-24)
+
+
+### Bug Fixes
+
+* **oibus:** v2 release ([6c9d49e](https://github.com/burgerni10/OIBus/commit/6c9d49efce01725f70488e3edb9bb8b9bfed0409))
+* **oibus:** v2 release ([c2e7418](https://github.com/burgerni10/OIBus/commit/c2e741801b2e0aedc982aa94d18d8b830d9a568a))
+* **oibus:** v2 release ([01c73da](https://github.com/burgerni10/OIBus/commit/01c73da6394adfde4143b49c6f21246d0d163d1e))
+* **oibus:** v2 release ([b32421c](https://github.com/burgerni10/OIBus/commit/b32421ceedf015f27343e20d56493ac2e641305a))
+* **oibus:** v2 release ([da0478c](https://github.com/burgerni10/OIBus/commit/da0478c22a41150a548f9f0e49962232a8c518c1))
+* **oibus:** v2 release ([ee5c8aa](https://github.com/burgerni10/OIBus/commit/ee5c8aa66d9101369ac85f4e21b21fef165a6005))
+* v2 tests ([aa64ccf](https://github.com/burgerni10/OIBus/commit/aa64ccfb2cafa28f6213a929a2486a1ca078fecf))
+* v2 tests ([4247487](https://github.com/burgerni10/OIBus/commit/4247487ca2a2e447c62122c0598d6fa8fd1f9fb9))
+
 ### [2.9.1](https://github.com/OptimistikSAS/OIBus/compare/v2.9.0...v2.9.1) (2023-07-27)
 
 
