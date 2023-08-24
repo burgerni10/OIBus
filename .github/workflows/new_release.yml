@@ -1,7 +1,6 @@
 name: TEST Release OIBus version
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
