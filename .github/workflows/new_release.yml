@@ -1,0 +1,67 @@
+name: Release new OIBus version
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  # New commit on branch cancels running workflows of the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: 'Tag new version'
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      release_created: ${{ steps.release.outputs.release_created }}
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          command: manifest
+          signoff: "Optimistik SAS <optimistiksas@users.noreply.github.com>"
+          default-branch: main
+          config-file: .github/release-please-config.json
+          manifest-file: .github/release-please-manifest.json
+
+      - uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Tag major and minor versions
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          git config user.name "Optimistik SAS"
+          git config user.email optimistiksas@users.noreply.github.com
+          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/google-github-actions/release-please-action.git"
+          git tag -d v${{ steps.release.outputs.major }} || true
+          git tag -d v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
+          git push origin :v${{ steps.release.outputs.major }} || true
+          git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
+          git tag -a v${{ steps.release.outputs.major }} -m "Release v${{ steps.release.outputs.major }}"
+          git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "Release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
+          git push origin v${{ steps.release.outputs.major }}
+          git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
+
+      - name: Set outputs
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "release_created=steps.release.outputs.release_created" >> $GITHUB_OUTPUT
+          echo "tag_name=steps.release.outputs.tag_name" >> $GITHUB_OUTPUT
+
+  build-x64:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    name: 'Build x64 binaries'
+    uses: ./.github/workflows/build_x64.yml
+    secrets:
+      PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+      PFX_BASE64_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
+    with:
+      tag_name: ${{ needs.release-please.outputs.tag_name }}
