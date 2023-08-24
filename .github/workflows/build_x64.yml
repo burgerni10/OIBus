@@ -10,9 +10,9 @@ on:
         description: 'PFD password'
         required: true
     inputs:
-      branch:
+      tag_name:
         type: string
-        description: 'The branch to checkout from'
+        description: 'The tag where to push the binaries'
         required: true
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.tag_name }}
 
       - name: Setup backend environment
         uses: ./.github/actions/setup_backend_environment
@@ -61,10 +61,11 @@ jobs:
           cd build/bin/${{ matrix.config['platform'] }}
           ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
 
-      - name: Upload artifact ${{ matrix.config['archiveName'] }}
-        uses: actions/upload-artifact@v3
-        with:
-          path: ./build/bin/${{ matrix.config['archiveName'] }}
+      - name: Upload Artifact ${{ matrix.config['archiveName'] }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run:
+          gh release upload ${{ inputs.tag_name }} ./build/bin/${{ matrix.config['archiveName'] }}
 
       - name: Package Windows installer
         env:
@@ -84,8 +85,9 @@ jobs:
         if: ${{ matrix.config['platform'] == 'win' }}
         run: mv ./build/bin/win-setup-release/oibus-setup.exe ./build/bin/win-setup-release/oibus-setup-win_x64.exe
 
-      - name: Upload Windows installer
-        if: ${{ matrix.config['platform'] == 'win' }}
-        uses: actions/upload-artifact@v3
-        with:
-          path: ./build/bin/win-setup-release/oibus-setup-win_x64.exe
+      - name: Upload Windows installer Artifact ${{ matrix.config['archiveName'] }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run:
+          gh release upload ${{ inputs.tag_name }} ./build/bin/win-setup-release/oibus-setup-win_x64.exe
+

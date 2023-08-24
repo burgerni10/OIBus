@@ -1,0 +1,39 @@
+name: [TEST] Release OIBus version
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "v2" ]
+
+concurrency:
+  # New commit on branch cancels running workflows of the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-please:
+    name: 'Tag new version'
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      release_created: ${{ steps.release.outputs.release_created }}
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: node
+      - name: Set outputs
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "release_created=steps.release.outputs.release_created" >> $GITHUB_OUTPUT
+          echo "tag_name=steps.release.outputs.tag_name" >> $GITHUB_OUTPUT
+
+  build-x64:
+    needs: release-please
+    name: 'Build x64 binaries'
+    uses: ./.github/workflows/build_x64.yml
+    secrets:
+      PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+      PFX_BASE64_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
+    with:
+      tag_name: ${{ needs.release-please.outputs.tag_name }}
