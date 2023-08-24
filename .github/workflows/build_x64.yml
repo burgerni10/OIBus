@@ -86,6 +86,7 @@ jobs:
         run: mv ./build/bin/win-setup-release/oibus-setup.exe ./build/bin/win-setup-release/oibus-setup-win_x64.exe
 
       - name: Upload Windows installer Artifact ${{ matrix.config['archiveName'] }}
+        if: ${{ matrix.config['platform'] == 'win' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
