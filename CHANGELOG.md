@@ -5,6 +5,37 @@
 
 ### Bug Fixes
 
+* add extra-files ([e0ab7b8](https://github.com/burgerni10/OIBus/commit/e0ab7b82d4cb6a80b8bdd38533051ca87715d83f))
+* add extra-files ([be01a28](https://github.com/burgerni10/OIBus/commit/be01a2870dde988872ebde86ed9d110813ca4815))
+* add extra-files ([e7a8018](https://github.com/burgerni10/OIBus/commit/e7a8018de09ced78b63b7a86bbf16a79341d5a0f))
+* add extra-files ([d90d5dd](https://github.com/burgerni10/OIBus/commit/d90d5dd5bc826f7716aadee639739656aad9d397))
+* add extra-files ([c1e16b8](https://github.com/burgerni10/OIBus/commit/c1e16b89898cb91e5956afdbd1cc9cd7e6b72a56))
+* Do not upload win installer for linux ([0c8c0c7](https://github.com/burgerni10/OIBus/commit/0c8c0c7fc7be0b72938dd7788548e130d092a1fd))
+* Move config release-please to root ([2653d83](https://github.com/burgerni10/OIBus/commit/2653d83a319ae6e5251432a6af608b45e1cf4a6e))
+* **oibus:** add extra-files ([737b38c](https://github.com/burgerni10/OIBus/commit/737b38c465beea88001f6a38932ba76cf7759928))
+* **oibus:** add extra-files ([44a8b13](https://github.com/burgerni10/OIBus/commit/44a8b130df648d61e651b9878a50aa359e6686ea))
+* **oibus:** add extra-files ([27f8c8d](https://github.com/burgerni10/OIBus/commit/27f8c8de22bd80e118d7b3dd4d8a7964946f3b49))
+* **oibus:** add extra-files ([cb58502](https://github.com/burgerni10/OIBus/commit/cb58502ab8456df8244261ca2ad2bc200a54c6be))
+* **oibus:** add extra-files ([e2a281e](https://github.com/burgerni10/OIBus/commit/e2a281e2e792b901798b5bed8fe96ab084db7b14))
+* **oibus:** add extra-files ([91e32db](https://github.com/burgerni10/OIBus/commit/91e32db51844137298f04ed9e9893493072c23d4))
+* **oibus:** add extra-files ([fe2a83e](https://github.com/burgerni10/OIBus/commit/fe2a83e49b4a75409745f8a05e5178c621168872))
+* **oibus:** add extra-files ([d2e4f66](https://github.com/burgerni10/OIBus/commit/d2e4f66123247106751cdf0f065de69aa4e585d1))
+* **oibus:** add extra-files ([eaefad6](https://github.com/burgerni10/OIBus/commit/eaefad6181a72a7bd79123ad77a54e0c449607dc))
+* **oibus:** add extra-files ([194bf93](https://github.com/burgerni10/OIBus/commit/194bf930d4d46bf11fad5304860bae6615bad994))
+* **oibus:** specific release ([4d52106](https://github.com/burgerni10/OIBus/commit/4d52106b732b292c2b97ed20d8bc1bf18d1d1510))
+* **oibus:** specific release ([6a68332](https://github.com/burgerni10/OIBus/commit/6a683325e192a9f29a1931e511744fc64785aa16))
+* **oibus:** specific release ([0cec057](https://github.com/burgerni10/OIBus/commit/0cec0574422e052c96d64a786209a85c66e0aa23))
+* **oibus:** specific release ([3acf980](https://github.com/burgerni10/OIBus/commit/3acf9800329862b99c14b6e0b4ef96ebe3f3f6e0))
+* **oibus:** specific release ([873e723](https://github.com/burgerni10/OIBus/commit/873e7237adc6ab40eb1d98b901bcdd995a511754))
+* **oibus:** v2 release ([cfdede9](https://github.com/burgerni10/OIBus/commit/cfdede984d3094a49d4609040b2e972666f1b6f2))
+* **oibus:** v2 release ([c48bfa8](https://github.com/burgerni10/OIBus/commit/c48bfa8cc88a84bf8bae049c67026553c73fd39c))
+* Update packages ([2db584c](https://github.com/burgerni10/OIBus/commit/2db584c91d925f629de60be3c0dcad9be46a90eb))
+
+## [3.0.1](https://github.com/burgerni10/OIBus/compare/v3.0.0...v3.0.1) (2023-08-24)
+
+
+### Bug Fixes
+
 * Do not upload win installer for linux ([0c8c0c7](https://github.com/burgerni10/OIBus/commit/0c8c0c7fc7be0b72938dd7788548e130d092a1fd))
 
 ## [3.0.0](https://github.com/burgerni10/OIBus/compare/v1.0.0...v3.0.0) (2023-08-24)
