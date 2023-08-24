@@ -1,5 +1,7 @@
 {
   "bootstrap-sha": "5687cb3d4a06b91507aa40a987062f7efead263d",
+  "last-release-sha": "5687cb3d4a06b91507aa40a987062f7efead263d",
+
   "packages": {
     "backend": {},
     "frontend": {},
