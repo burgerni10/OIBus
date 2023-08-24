@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/burgerni10/OIBus/compare/v3.0.0...v3.0.1) (2023-08-24)
+
+
+### Bug Fixes
+
+* Do not upload win installer for linux ([0c8c0c7](https://github.com/burgerni10/OIBus/commit/0c8c0c7fc7be0b72938dd7788548e130d092a1fd))
+
 ## [3.0.0](https://github.com/burgerni10/OIBus/compare/v1.0.0...v3.0.0) (2023-08-24)
 
 
