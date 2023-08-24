@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - v2
+      - oibus-v2
 
 concurrency:
   # New commit on branch cancels running workflows of the same branch
