@@ -1,0 +1,55 @@
+{
+  "bootstrap-sha": "5687cb3d4a06b91507aa40a987062f7efead263d",
+  "last-release-sha": "5687cb3d4a06b91507aa40a987062f7efead263d",
+  "release-type": "simple",
+  "packages": {
+    ".": {}
+  },
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "backend/package.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "backend/package-lock.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "backend/package-lock.json",
+      "jsonpath": "packages[\"\"].version"
+    },
+    {
+      "type": "json",
+      "path": "frontend/package.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "frontend/package-lock.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "frontend/package-lock.json",
+      "jsonpath": "packages[\"\"].version"
+    },
+    {
+      "type": "json",
+      "path": "shared/package.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "shared/package-lock.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "shared/package-lock.json",
+      "jsonpath": "packages[\"\"].version"
+    }
+  ]
+}
