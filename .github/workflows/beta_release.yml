@@ -2,11 +2,6 @@ name: TEST Release OIBus version
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        type: string
-        description: 'The branch to checkout from'
-        required: true
 
 concurrency:
   # New commit on branch cancels running workflows of the same branch
@@ -30,7 +25,7 @@ jobs:
         with:
           command: manifest
           signoff: "Optimistik SAS <optimistiksas@users.noreply.github.com>"
-          default-branch: ${{ inputs.branch }}
+          default-branch: ${{ github.ref_name }}
           config-file: .github/release-please-config.json
           manifest-file: .github/release-please-manifest.json
           draft: true
