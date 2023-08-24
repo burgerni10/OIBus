@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.3](https://github.com/burgerni10/OIBus/compare/v2.9.2...v2.9.3) (2023-08-24)
+
+
+### Bug Fixes
+
+* v2 tests ([a791428](https://github.com/burgerni10/OIBus/commit/a791428cc840f3204f983e363b1e820fafa2ad50))
+
 ## [2.9.2](https://github.com/burgerni10/OIBus/compare/v2.9.1...v2.9.2) (2023-08-24)
 
 
