@@ -1,13 +1,10 @@
 {
   "bootstrap-sha": "5687cb3d4a06b91507aa40a987062f7efead263d",
   "last-release-sha": "5687cb3d4a06b91507aa40a987062f7efead263d",
+  "release-type": "node",
 
   "packages": {
-    "backend": {},
-    "frontend": {},
-    "shared": {}
   },
-  "release-type": "node",
   "extra-files": [
     {
       "type": "json",
