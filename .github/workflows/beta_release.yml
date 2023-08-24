@@ -1,4 +1,4 @@
-name: TEST Release OIBus version
+name: Release OIBus Beta version
 
 on:
   workflow_dispatch:
