@@ -4,6 +4,7 @@
   "release-type": "node",
 
   "packages": {
+    ".": {}
   },
   "extra-files": [
     {
