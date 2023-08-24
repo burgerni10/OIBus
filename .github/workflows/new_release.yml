@@ -27,7 +27,7 @@ jobs:
         id: release
         with:
           release-type: simple
-          command: manifest
+          extra-files: ["backend/package.json", "backend/package.json"]
           signoff: "Optimistik SAS <optimistiksas@users.noreply.github.com>"
 
       - uses: actions/checkout@v2
