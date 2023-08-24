@@ -1,8 +1,34 @@
 {
-  "packages": {
-    "backend": "3.0.0",
-    "frontend": "3.0.0",
-    "shared": "3.0.0"
-  },
-  "release-type": "node"
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "backend/package.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "backend/package-lock.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "frontend/package.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "frontend/package-lock.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "shared/package.json",
+      "jsonpath": "version"
+    },
+    {
+      "type": "json",
+      "path": "shared/package-lock.json",
+      "jsonpath": "version"
+    }
+  ]
 }
