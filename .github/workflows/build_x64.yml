@@ -1,19 +1,8 @@
-name: Release next OIBus version
+name: Build OIBus x64
 
 on:
-  workflow_call:
-    secrets:
-      PFX_BASE64_CONTENT:
-        description: 'Base 64 PFX certificate content'
-        required: true
-      PFX_PASSWORD:
-        description: 'PFD password'
-        required: true
-    inputs:
-      branch:
-        type: string
-        description: 'The branch to checkout from'
-        required: true
+  release:
+    types: [ published ]
 
 jobs:
   build-binaries:
@@ -31,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ github.ref }}
 
       - name: Setup backend environment
         uses: ./.github/actions/setup_backend_environment
@@ -61,31 +50,35 @@ jobs:
           cd build/bin/${{ matrix.config['platform'] }}
           ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
 
-      - name: Upload artifact ${{ matrix.config['archiveName'] }}
-        uses: actions/upload-artifact@v3
-        with:
-          path: ./build/bin/${{ matrix.config['archiveName'] }}
-
-      - name: Package Windows installer
+      - name: Upload Artifact ${{ matrix.config['archiveName'] }}
         env:
-          PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
-          PFX_BASE64_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
-          PFX_PATH: C://oibus.pfx
-        if: ${{ matrix.config['platform'] == 'win' }}
-        shell: pwsh
-        working-directory: ./backend
-        run: |
-          $encodedBytes = [System.Convert]::FromBase64String("$env:PFX_BASE64_CONTENT")
-          Set-Content -Path "$env:PFX_PATH" -AsByteStream -Value $encodedBytes
-          npm run build:win-setup
-          Remove-Item -Path "$env:PFX_PATH";
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+        run:
+          gh release upload ${{ github.ref_name }} ./build/bin/${{ matrix.config['archiveName'] }}
 
-      - name: Rename windows installer
-        if: ${{ matrix.config['platform'] == 'win' }}
-        run: mv ./build/bin/win-setup-release/oibus-setup.exe ./build/bin/win-setup-release/oibus-setup-win_x64.exe
+#
+#      - name: Package Windows installer
+#        env:
+#          PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+#          PFX_BASE64_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
+#          PFX_PATH: C://oibus.pfx
+#        if: ${{ matrix.config['platform'] == 'win' }}
+#        shell: pwsh
+#        working-directory: ./backend
+#        run: |
+#          $encodedBytes = [System.Convert]::FromBase64String("$env:PFX_BASE64_CONTENT")
+#          Set-Content -Path "$env:PFX_PATH" -AsByteStream -Value $encodedBytes
+#          npm run build:win-setup
+#          Remove-Item -Path "$env:PFX_PATH";
+#
+#      - name: Rename windows installer
+#        if: ${{ matrix.config['platform'] == 'win' }}
+#        run: mv ./build/bin/win-setup-release/oibus-setup.exe ./build/bin/win-setup-release/oibus-setup-win_x64.exe
+#
+#      - name: Upload Windows installer Artifact ${{ matrix.config['archiveName'] }}
+#        if: ${{ matrix.config['platform'] == 'win' }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+#        run:
+#          gh release upload ${{ inputs.tag_name }} ./build/bin/win-setup-release/oibus-setup-win_x64.exe
 
-      - name: Upload Windows installer
-        if: ${{ matrix.config['platform'] == 'win' }}
-        uses: actions/upload-artifact@v3
-        with:
-          path: ./build/bin/win-setup-release/oibus-setup-win_x64.exe
