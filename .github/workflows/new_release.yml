@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   release-please:
-    name: 'Tag new version'
+    name: 'Tag a new version'
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
