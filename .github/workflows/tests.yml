@@ -1,8 +1,6 @@
 name: Run OIBus tests
 
 on:
-  workflow_dispatch:
-  workflow_call:
   push:
     branches: [ "main", "v2" ]
     paths-ignore: [ "documentation/**", "build/**", "data-folder/**", "**.md" ]

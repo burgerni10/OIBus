@@ -1,8 +1,8 @@
-name: Release next OIBus version
+name: Build OIBus x64
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   build-binaries:
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.tag_name }}
+          ref: ${{ github.ref_name }}
 
       - name: Setup backend environment
         uses: ./.github/actions/setup_backend_environment

@@ -1,7 +1,6 @@
 name: Release V2 OIBus version
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - oibus-v2
