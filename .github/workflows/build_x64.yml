@@ -2,7 +2,7 @@ name: Build OIBus x64
 
 on:
   release:
-    types: [ created ]
+    types: [ published ]
 
 jobs:
   echo:
