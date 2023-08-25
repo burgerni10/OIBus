@@ -2,6 +2,7 @@ name: Release next OIBus version
 
 on:
   release:
+    types: [published]
 
 jobs:
   build-binaries:
