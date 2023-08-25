@@ -4,6 +4,10 @@ inputs:
   cache_version:
     description: 'Value gets appended to the cache key and will therefore invalidate the cache if it changes'
     required: true
+  platforms:
+    description: 'x64 or arm64 platform'
+    required: true
+    default: x64
 
 runs:
   using: "composite"
@@ -39,10 +43,19 @@ runs:
       run: rm cache_version
 
     - name: Install dependencies
+      if: ${{ steps.cached-node-modules-dependencies.outputs.cache-hit != 'true' && inputs.platforms == 'x64' }}
       working-directory: frontend
       shell: bash
-      if: steps.cached-node-modules-dependencies.outputs.cache-hit != 'true'
       run: npm ci
 
 
-
+    - name: Run the build process with Docker
+      if: ${{ steps.cached-node-modules-dependencies.outputs.cache-hit != 'true' && inputs.platforms == 'arm64' }}
+      uses: addnab/docker-run-action@v3
+      with:
+        image: arm64v8/node:18-alpine3.18
+        options: |
+          --volume ${{ runner.temp }}/frontend:/frontend
+        run: |
+          cd frontend
+          npm ci
