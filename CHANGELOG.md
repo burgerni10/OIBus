@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/burgerni10/OIBus/compare/v2.9.1...v3.0.0) (2023-08-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* release-please CI
+
+### Miscellaneous Chores
+
+* release-please CI ([b82e3dd](https://github.com/burgerni10/OIBus/commit/b82e3dd35fd8e9b09af6296de20d64c5a209f8cf))
+
 ## [3.0.9](https://github.com/burgerni10/OIBus/compare/v3.0.8...v3.0.9) (2023-08-25)
 
 
