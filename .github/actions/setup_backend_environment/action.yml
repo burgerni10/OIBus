@@ -4,10 +4,6 @@ inputs:
   cache_version:
     description: 'Value gets appended to the cache key and will therefore invalidate the cache if it changes'
     required: true
-  platforms:
-    description: 'x64 or arm64 platform'
-    required: true
-    default: x64
 
 runs:
   using: "composite"
@@ -36,7 +32,7 @@ runs:
         # calendar week and the cache version.
         # Providing a different value for the cache version enables manual
         # invalidation of the cache in case it is in some erroneous state.
-        key: backend-node_modules-${{ runner.os }}-${{ hashFiles('./backend/package-lock.json') }}-${{ hashFiles('./backend/package.json') }}-${{ steps.date.outputs.date }}-${{ hashFiles('cache_version') }}
+        key: backend-node_modules-${{ runner.os }}-${{ hashFiles('./backend/package-lock.json') }}-${{ steps.date.outputs.date }}-${{ hashFiles('cache_version') }}
 
     - name: Remove cache version
       shell: bash
@@ -44,19 +40,7 @@ runs:
       run: rm cache_version
 
     - name: Install dependencies
-      if: ${{ steps.cached-node-modules-dependencies.outputs.cache-hit != 'true' && inputs.platforms == 'x64' }}
+      if: ${{ steps.cached-node-modules-dependencies.outputs.cache-hit != 'true' }}
       shell: bash
       working-directory: backend
       run: npm ci
-
-
-    - name: Run the build process with Docker
-      if: ${{ steps.cached-node-modules-dependencies.outputs.cache-hit != 'true' && inputs.platforms == 'arm64' }}
-      uses: addnab/docker-run-action@v3
-      with:
-        image: arm64v8/node:18-alpine3.18
-        options: |
-          --volume ${{ runner.temp }}/backend:/backend
-        run: |
-          cd backend
-          npm ci

@@ -29,22 +29,3 @@ jobs:
           config-file: .github/release-please-config.json
           manifest-file: .github/release-please-manifest.json
           prerelease: true
-
-      - uses: actions/checkout@v3
-        if: ${{ steps.release.outputs.release_created }}
-
-      - name: Tag major and minor versions
-        if: ${{ steps.release.outputs.release_created }}
-        run: |
-          git config user.name "Optimistik SAS"
-          git config user.email optimistiksas@users.noreply.github.com
-          git remote add gh-token "https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/google-github-actions/release-please-action.git"
-          git tag -d v${{ steps.release.outputs.major }} || true
-          git tag -d v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git push origin :v${{ steps.release.outputs.major }} || true
-          git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git tag -a v${{ steps.release.outputs.major }} -m "Release v${{ steps.release.outputs.major }}"
-          git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "Release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
-          git push origin v${{ steps.release.outputs.major }}
-          git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
-

@@ -33,24 +33,6 @@ jobs:
           manifest-file: .github/release-please-manifest.json
           prerelease: false
 
-      - uses: actions/checkout@v3
-        if: ${{ steps.release.outputs.release_created }}
-
-      - name: Tag major and minor versions
-        if: ${{ steps.release.outputs.release_created }}
-        run: |
-          git config user.name "Optimistik SAS"
-          git config user.email optimistiksas@users.noreply.github.com
-          git remote add gh-token "https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/google-github-actions/release-please-action.git"
-          git push origin --delete v${{ steps.release.outputs.major }} || true
-          git push origin --delete v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git push origin :v${{ steps.release.outputs.major }} || true
-          git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git tag -a v${{ steps.release.outputs.major }} -m "Release v${{ steps.release.outputs.major }}"
-          git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "Release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
-          git push origin v${{ steps.release.outputs.major }}
-          git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
-
       - name: Set outputs
         if: ${{ steps.release.outputs.release_created }}
         run: |
@@ -82,7 +64,6 @@ jobs:
           cache_version: ${{ secrets.GH_ACTIONS_CACHE_KEY }}
 
       - name: Build OIBus for ${{ matrix.config['friendlyName'] }}
-        if: ${{ matrix.config['platform'] != 'linux-arm64' }}
         run: npm run build:${{ matrix.config['platform'] }}
 
       - name: Test OIBus run for ${{ matrix.config['friendlyName'] }}
@@ -101,31 +82,30 @@ jobs:
         run:
           gh release upload ${{ needs.release-please.outputs.tag_name }} ./build/bin/${{ matrix.config['archiveName'] }}
 
-#      - name: Package Windows installer
-#        env:
-#          PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
-#          PFX_BASE64_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
-#          PFX_PATH: C://oibus.pfx
-#        if: ${{ matrix.config['platform'] == 'win' }}
-#        shell: pwsh
-#        working-directory: ./build/bin/win
-#        run: |
-#          $encodedBytes = [System.Convert]::FromBase64String("$env:PFX_BASE64_CONTENT")
-#          Set-Content -Path "$env:PFX_PATH" -AsByteStream -Value $encodedBytes
-#          npm run build:win-setup
-#          Remove-Item -Path "$env:PFX_PATH";
-#
-#      - name: Rename windows installer
-#        if: ${{ matrix.config['platform'] == 'win' }}
-#        run: mv ./build/bin/win-setup-release/oibus-setup.exe ./build/bin/win-setup-release/oibus-setup-win32x64.exe
-#
-#      - name: Upload Windows installer Artifact ${{ matrix.config['archiveName'] }}
-#        if: ${{ matrix.config['platform'] == 'win' }}
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
-#        run:
-#          gh release upload ${{ inputs.tag_name }} ./build/bin/win-setup-release/oibus-setup-win32x64.exe
+      - name: Package Windows installer
+        if: ${{ matrix.config['platform'] == 'win' }}
+        env:
+          PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+          PFX_BASE64_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
+          PFX_PATH: C://oibus.pfx
+        shell: pwsh
+        working-directory: ./build/bin/win
+        run: |
+          $encodedBytes = [System.Convert]::FromBase64String("$env:PFX_BASE64_CONTENT")
+          Set-Content -Path "$env:PFX_PATH" -AsByteStream -Value $encodedBytes
+          npm run build:win-setup
+          Remove-Item -Path "$env:PFX_PATH";
 
+      - name: Rename windows installer
+        if: ${{ matrix.config['platform'] == 'win' }}
+        run: mv ./build/bin/win-setup-release/oibus-setup.exe ./build/bin/win-setup-release/oibus-setup-win32x64.exe
+
+      - name: Upload Windows installer Artifact ${{ matrix.config['archiveName'] }}
+        if: ${{ matrix.config['platform'] == 'win' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+        run:
+          gh release upload ${{ inputs.tag_name }} ./build/bin/win-setup-release/oibus-setup-win32x64.exe
 
   slack:
     name: 'Slack notification'
