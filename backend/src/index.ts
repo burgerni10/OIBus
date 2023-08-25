@@ -67,7 +67,7 @@ const LOG_DB_NAME = 'logs.db';
   await encryptionService.init();
 
   if (check) {
-    console.info('OIBus has started in check mode. Exiting process.');
+    console.info('OIBus started in check mode. Exiting process.');
     process.exit();
     return;
   }

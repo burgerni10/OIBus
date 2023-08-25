@@ -125,3 +125,17 @@ jobs:
 #          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 #        run:
 #          gh release upload ${{ inputs.tag_name }} ./build/bin/win-setup-release/oibus-setup-win32x64.exe
+
+
+  slack:
+    name: 'Slack notification'
+    needs: [ build-binaries ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Slack notification
+        uses: kpritam/slack-job-status-action@v1
+        with:
+          job-status: ${{ needs.build-binaries.result }}
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel: oibus-ci
