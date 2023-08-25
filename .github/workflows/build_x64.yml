@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload Artifact ${{ matrix.config['archiveName'] }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
         run:
           gh release upload ${{ github.ref_name }} ./build/bin/${{ matrix.config['archiveName'] }}
 
@@ -78,7 +78,7 @@ jobs:
 #      - name: Upload Windows installer Artifact ${{ matrix.config['archiveName'] }}
 #        if: ${{ matrix.config['platform'] == 'win' }}
 #        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 #        run:
 #          gh release upload ${{ inputs.tag_name }} ./build/bin/win-setup-release/oibus-setup-win_x64.exe
 
