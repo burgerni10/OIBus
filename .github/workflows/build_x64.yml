@@ -5,56 +5,65 @@ on:
     types: [ created ]
 
 jobs:
-  build-binaries:
-    name: Build for ${{ matrix.config['friendlyName'] }}
-    runs-on: ${{ matrix.config['os'] }}
-    strategy:
-      matrix:
-        config:
-          - { friendlyName: 'MacOS x64', os: 'macos-latest',   platform: 'macos', archiveName: 'oibus-macos_x64.zip', zip: 'zip -r' }
-          - { friendlyName: 'Windows x64', os: 'windows-latest', platform: 'win',   archiveName: 'oibus-win_x64.zip', zip: '7z a -tzip' }
-          - { friendlyName: 'Linux x64', os: 'ubuntu-latest',  platform: 'linux', archiveName: 'oibus-linux_x64.zip', zip: 'zip -r' }
-    timeout-minutes: 20
+  echo:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
+      - name: test
+        run: echo ${{ github.ref_name }}
 
-      - name: Setup backend environment
-        uses: ./.github/actions/setup_backend_environment
-        with:
-          cache_version: ${{ secrets.GH_ACTIONS_CACHE_KEY }}
 
-      - name: Setup frontend environment
-        uses: ./.github/actions/setup_frontend_environment
-        with:
-          cache_version: ${{ secrets.GH_ACTIONS_CACHE_KEY }}
-
-      - name: Bundle OIBus frontend for ${{ matrix.config['friendlyName'] }}
-        working-directory: ./frontend
-        run: npm run build
-
-      - name: Build OIBus for ${{ matrix.config['friendlyName'] }}
-        working-directory: ./backend
-        run: npm run build:${{ matrix.config['platform'] }}
-
-      - name: Test OIBus run for ${{ matrix.config['friendlyName'] }}
-        run: |
-          cd build/bin/${{ matrix.config['platform'] }}
-          ./oibus --config ../../../data-folder --check true
-
-      - name: Package OIBus for ${{ matrix.config['friendlyName'] }}
-        run: |
-          cd build/bin/${{ matrix.config['platform'] }}
-          ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
-
-      - name: Upload Artifact ${{ matrix.config['archiveName'] }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
-        run:
-          gh release upload ${{ github.ref_name }} ./build/bin/${{ matrix.config['archiveName'] }}
+#jobs:
+#  build-binaries:
+#    name: Build for ${{ matrix.config['friendlyName'] }}
+#    runs-on: ${{ matrix.config['os'] }}
+#    strategy:
+#      matrix:
+#        config:
+#          - { friendlyName: 'MacOS x64', os: 'macos-latest',   platform: 'macos', archiveName: 'oibus-macos_x64.zip', zip: 'zip -r' }
+#          - { friendlyName: 'Windows x64', os: 'windows-latest', platform: 'win',   archiveName: 'oibus-win_x64.zip', zip: '7z a -tzip' }
+#          - { friendlyName: 'Linux x64', os: 'ubuntu-latest',  platform: 'linux', archiveName: 'oibus-linux_x64.zip', zip: 'zip -r' }
+#    timeout-minutes: 20
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#        with:
+#          ref: ${{ github.ref }}
+#
+#      - name: Setup backend environment
+#        uses: ./.github/actions/setup_backend_environment
+#        with:
+#          cache_version: ${{ secrets.GH_ACTIONS_CACHE_KEY }}
+#
+#      - name: Setup frontend environment
+#        uses: ./.github/actions/setup_frontend_environment
+#        with:
+#          cache_version: ${{ secrets.GH_ACTIONS_CACHE_KEY }}
+#
+#      - name: Bundle OIBus frontend for ${{ matrix.config['friendlyName'] }}
+#        working-directory: ./frontend
+#        run: npm run build
+#
+#      - name: Build OIBus for ${{ matrix.config['friendlyName'] }}
+#        working-directory: ./backend
+#        run: npm run build:${{ matrix.config['platform'] }}
+#
+#      - name: Test OIBus run for ${{ matrix.config['friendlyName'] }}
+#        run: |
+#          cd build/bin/${{ matrix.config['platform'] }}
+#          ./oibus --config ../../../data-folder --check true
+#
+#      - name: Package OIBus for ${{ matrix.config['friendlyName'] }}
+#        run: |
+#          cd build/bin/${{ matrix.config['platform'] }}
+#          ${{ matrix.config['zip'] }} ../${{ matrix.config['archiveName'] }} .
+#
+#      - name: Upload Artifact ${{ matrix.config['archiveName'] }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+#        run:
+#          gh release upload ${{ github.ref_name }} ./build/bin/${{ matrix.config['archiveName'] }}
 
 
 #      - name: Package Windows installer
