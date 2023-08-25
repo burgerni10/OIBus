@@ -2,7 +2,7 @@ name: Build OIBus x64
 
 on:
   release:
-    types: [ published ]
+    types: [ created ]
 
 jobs:
   build-binaries:
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.ref }}
 
       - name: Setup backend environment
         uses: ./.github/actions/setup_backend_environment
