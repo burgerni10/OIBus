@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.6](https://github.com/burgerni10/OIBus/compare/v3.0.5...v3.0.6) (2023-08-25)
+
+
+### Bug Fixes
+
+* **main:** release ([9e888d3](https://github.com/burgerni10/OIBus/commit/9e888d3c37a3e6100ea4fe121724dd06346cafa5))
+
 ## [3.0.5](https://github.com/burgerni10/OIBus/compare/v3.0.4...v3.0.5) (2023-08-25)
 
 
