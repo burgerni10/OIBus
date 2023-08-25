@@ -55,13 +55,4 @@ jobs:
           echo "release_created=steps.release.outputs.release_created" >> $GITHUB_OUTPUT
           echo "tag_name=steps.release.outputs.tag_name" >> $GITHUB_OUTPUT
 
-  build-x64:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
-    name: 'Build x64 binaries'
-    uses: ./.github/workflows/build_x64.yml
-    secrets:
-      PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }}
-      PFX_BASE64_CONTENT: ${{ secrets.PFX_BASE64_CONTENT }}
-    with:
-      tag_name: ${{ needs.release-please.outputs.tag_name }}
+  

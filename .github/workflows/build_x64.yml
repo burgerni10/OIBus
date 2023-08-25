@@ -1,19 +1,7 @@
 name: Release next OIBus version
 
 on:
-  workflow_call:
-    secrets:
-      PFX_BASE64_CONTENT:
-        description: 'Base 64 PFX certificate content'
-        required: true
-      PFX_PASSWORD:
-        description: 'PFD password'
-        required: true
-    inputs:
-      tag_name:
-        type: string
-        description: 'The tag where to push the binaries'
-        required: true
+  release:
 
 jobs:
   build-binaries:
@@ -65,7 +53,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
-          gh release upload ${{ inputs.tag_name }} ./build/bin/${{ matrix.config['archiveName'] }}
+          gh release upload ${{ github.ref_name }} ./build/bin/${{ matrix.config['archiveName'] }}
+
 
 #      - name: Package Windows installer
 #        env:
