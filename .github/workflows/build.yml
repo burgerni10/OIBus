@@ -3,7 +3,7 @@ name: Build OIBus binaries
 on:
   workflow_dispatch:
   release:
-    types: [ published ]
+    types: [ published, edited ]
 
 jobs:
   build-binaries-x64:
